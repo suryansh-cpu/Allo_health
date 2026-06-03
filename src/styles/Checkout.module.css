@@ -1,0 +1,71 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.header {
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.headerInner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: color 0.15s;
+}
+
+.back:hover {
+  color: #111827;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoMark {
+  font-size: 20px;
+  color: #111827;
+}
+
+.logoText {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.03em;
+}
+
+.main {
+  flex: 1;
+  padding: 40px 0 64px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 28px;
+}
