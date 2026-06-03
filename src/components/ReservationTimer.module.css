@@ -1,0 +1,61 @@
+.timer {
+  border-radius: 12px;
+  padding: 20px 24px;
+  background: #f0f9ff;
+  border: 2px solid #bae6fd;
+  text-align: center;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.timer.warning {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.timer.expired {
+  background: #fef2f2;
+  border-color: #fecaca;
+  animation: none;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #0369a1;
+  margin-bottom: 8px;
+}
+
+.warning .label {
+  color: #c2410c;
+}
+
+.expired .label {
+  color: #b91c1c;
+}
+
+.display {
+  font-size: 48px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #0c4a6e;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.warning .display {
+  color: #9a3412;
+}
+
+.expiredMsg {
+  font-size: 14px;
+  color: #b91c1c;
+  margin: 8px 0 0;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
