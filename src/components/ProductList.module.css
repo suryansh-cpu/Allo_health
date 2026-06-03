@@ -1,0 +1,200 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 24px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  padding: 24px 24px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.category {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.productName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 10px 0 6px;
+  line-height: 1.3;
+}
+
+.description {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.inventory {
+  padding: 16px 24px 20px;
+  flex: 1;
+}
+
+.inventoryHeading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  margin: 0 0 12px;
+}
+
+.noInventory {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.warehouseRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.warehouseRow:last-child {
+  border-bottom: none;
+}
+
+.warehouseInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.warehouseName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.warehouseLocation {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.badgeOk {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.badgeLow {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badgeOut {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.reserveCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.reserveBtn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.reserveBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.reserveBtn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.reserveBtn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.reserveError {
+  font-size: 11px;
+  color: #dc2626;
+  max-width: 160px;
+  text-align: right;
+  margin: 0;
+}
+
+.soldOutBanner {
+  background: #fef2f2;
+  color: #991b1b;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px;
+}
+
+.empty {
+  text-align: center;
+  color: #9ca3af;
+  padding: 48px 0;
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
