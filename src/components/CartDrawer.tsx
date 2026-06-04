@@ -19,7 +19,7 @@ interface CheckoutError {
 
 export default function CartDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
   const router = useRouter();
-  const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice } = useCart();
+  const { items, removeItem, updateQuantity, clearCart, totalItems, totalPrice, setActiveCheckout } = useCart();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<CheckoutError[]>([]);
 
@@ -78,8 +78,17 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
       return;
     }
 
-    // All succeeded — navigate to multi-checkout page
+    // All succeeded — save active checkout to context/localStorage before navigating
     const ids = succeeded.map((r) => r.data.reservation.id).join(',');
+    const earliestExpiry = succeeded
+      .map((r) => new Date(r.data.reservation.expiresAt).getTime())
+      .sort((a, b) => a - b)[0];
+
+    setActiveCheckout({
+      ids,
+      expiresAt: new Date(earliestExpiry).toISOString(),
+    });
+
     clearCart();
     onClose();
     router.push(`/checkout?ids=${ids}`);

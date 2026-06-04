@@ -124,3 +124,87 @@
 .cartEmpty {
   font-size: 14px;
 }
+/* ── Active Checkout Banner ── */
+.checkoutBanner {
+  background: #1e293b;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 64px;   /* sits right below the 64px sticky header */
+  z-index: 99;
+  border-bottom: 2px solid #334155;
+}
+
+.checkoutBannerExpiredBg {
+  background: #7f1d1d;
+  border-bottom-color: #991b1b;
+}
+
+.checkoutBannerLabel {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.checkoutBannerTimer {
+  font-variant-numeric: tabular-nums;
+  font-size: 16px;
+  font-weight: 800;
+  color: #4ade80;
+  letter-spacing: 0.04em;
+}
+
+.checkoutBannerTimerWarn {
+  color: #fb923c;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.checkoutBannerExpired {
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+.checkoutBannerResume {
+  margin-left: 6px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.checkoutBannerResume:hover {
+  background: #4338ca;
+}
+
+.checkoutBannerDismiss {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.checkoutBannerDismiss:hover {
+  color: #f1f5f9;
+  background: #334155;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}

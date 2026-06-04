@@ -5,13 +5,13 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import { getReservation } from '../services/reservationService';
 import ReservationTimer from '../components/ReservationTimer';
+import { useCart } from '../components/CartContext';
 import styles from '../styles/Checkout.module.css';
 
 type Reservation = NonNullable<Awaited<ReturnType<typeof getReservation>>>;
 
 interface Props {
   reservations: Reservation[];
-  // earliest expiry drives the shared countdown
   earliestExpiry: string;
 }
 
@@ -25,6 +25,7 @@ function formatPrice(paise: number) {
 
 export default function CheckoutPage({ reservations: initial, earliestExpiry }: Props) {
   const router = useRouter();
+  const { clearActiveCheckout } = useCart();
   const [reservations, setReservations] = useState(initial);
   const [loading, setLoading] = useState<'confirm' | 'cancel' | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,6 +55,7 @@ export default function CheckoutPage({ reservations: initial, earliestExpiry }: 
       if (err.status === 410) {
         setExpired(true);
         setError('Your reservation has expired. Please start over.');
+        clearActiveCheckout();
       } else {
         setError(err.data.error ?? 'Something went wrong.');
       }
@@ -61,6 +63,7 @@ export default function CheckoutPage({ reservations: initial, earliestExpiry }: 
       return;
     }
 
+    clearActiveCheckout();
     setDone('confirmed');
     setLoading(null);
   }
@@ -72,8 +75,14 @@ export default function CheckoutPage({ reservations: initial, earliestExpiry }: 
         fetch(`/api/reservations/${r.id}/release`, { method: 'POST' }),
       ),
     );
+    clearActiveCheckout();
     setDone('released');
     setLoading(null);
+  }
+
+  function handleExpire() {
+    setExpired(true);
+    clearActiveCheckout();
   }
 
   if (done === 'confirmed') {
@@ -129,7 +138,7 @@ export default function CheckoutPage({ reservations: initial, earliestExpiry }: 
         {/* Right — timer + actions */}
         <div className={styles.actions}>
           {allPending && !expired && (
-            <ReservationTimer expiresAt={earliestExpiry} onExpire={() => setExpired(true)} />
+            <ReservationTimer expiresAt={earliestExpiry} onExpire={handleExpire} />
           )}
 
           {expired && (
@@ -192,7 +201,6 @@ function CheckoutShell({ children }: { children: React.ReactNode }) {
 export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
   const ids = context.query.ids;
 
-  // Support both ?ids=a,b,c (multi-cart) and legacy ?id=x (single)
   const idList: string[] = ids
     ? (typeof ids === 'string' ? ids.split(',') : ids)
     : context.query.id
@@ -211,7 +219,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async (context) => 
     return { notFound: true };
   }
 
-  // Earliest expiry drives the shared countdown timer
   const earliestExpiry = reservations
     .map((r) => new Date(r.expiresAt).getTime())
     .sort((a, b) => a - b)[0];

@@ -1,6 +1,7 @@
 import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { getProductsWithInventory } from '../services/productService';
 import ProductList from '../components/ProductList';
 import CartDrawer from '../components/CartDrawer';
@@ -39,6 +40,83 @@ function CartButton({ onClick }: { onClick: () => void }) {
   );
 }
 
+/** Live countdown shown inside the active-checkout banner */
+function CheckoutCountdown({ expiresAt }: { expiresAt: string }) {
+  const [secondsLeft, setSecondsLeft] = useState(() =>
+    Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000)),
+  );
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+    const tick = setInterval(() => {
+      const rem = Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
+      setSecondsLeft(rem);
+      if (rem === 0) clearInterval(tick);
+    }, 1000);
+    return () => clearInterval(tick);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expiresAt]);
+
+  if (secondsLeft === 0) return <span className={styles.checkoutBannerExpired}>Expired</span>;
+
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  const isWarning = secondsLeft <= 120;
+  return (
+    <span className={`${styles.checkoutBannerTimer} ${isWarning ? styles.checkoutBannerTimerWarn : ''}`}>
+      {String(m).padStart(2, '0')}:{String(s).padStart(2, '0')}
+    </span>
+  );
+}
+
+/** Sticky banner shown when an active checkout is persisted */
+function ActiveCheckoutBanner() {
+  const { activeCheckout, clearActiveCheckout } = useCart();
+  const router = useRouter();
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    if (!activeCheckout) return;
+    if (new Date(activeCheckout.expiresAt).getTime() <= Date.now()) {
+      setExpired(true);
+    }
+  }, [activeCheckout]);
+
+  if (!activeCheckout) return null;
+
+  if (expired) {
+    return (
+      <div className={`${styles.checkoutBanner} ${styles.checkoutBannerExpiredBg}`}>
+        <span>⛔ Your checkout reservation expired — stock has been released.</span>
+        <button className={styles.checkoutBannerDismiss} onClick={clearActiveCheckout}>
+          Dismiss
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.checkoutBanner}>
+      <span className={styles.checkoutBannerLabel}>⏱ Checkout in progress —</span>
+      <CheckoutCountdown expiresAt={activeCheckout.expiresAt} />
+      <span className={styles.checkoutBannerLabel}>remaining</span>
+      <button
+        className={styles.checkoutBannerResume}
+        onClick={() => router.push(`/checkout?ids=${activeCheckout.ids}`)}
+      >
+        Resume Checkout →
+      </button>
+      <button
+        className={styles.checkoutBannerDismiss}
+        onClick={clearActiveCheckout}
+        title="Dismiss (does not cancel your reservation)"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
 export default function Home({ products }: Props) {
   const [cartOpen, setCartOpen] = useState(false);
 
@@ -60,6 +138,9 @@ export default function Home({ products }: Props) {
             <CartButton onClick={() => setCartOpen(true)} />
           </div>
         </header>
+
+        {/* Active checkout banner sits right below the sticky header */}
+        <ActiveCheckoutBanner />
 
         <main className={styles.main}>
           <div className={styles.container}>

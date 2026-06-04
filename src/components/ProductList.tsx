@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './ProductList.module.css';
 import { useCart } from './CartContext';
 
@@ -41,107 +42,128 @@ function StockBadge({ available }: { available: number }) {
 
 export default function ProductList({ products }: Props) {
   const { items, addItem, removeItem, updateQuantity } = useCart();
+  const [checkoutBlockedMsg, setCheckoutBlockedMsg] = useState<string | null>(null);
+
+  function tryAddItem(item: Parameters<typeof addItem>[0]) {
+    try {
+      addItem(item);
+    } catch (e: unknown) {
+      if (e instanceof Error && e.message === 'CHECKOUT_ACTIVE') {
+        setCheckoutBlockedMsg(
+          'You have a checkout in progress. Please complete or cancel it before adding new items.',
+        );
+        setTimeout(() => setCheckoutBlockedMsg(null), 5000);
+      }
+    }
+  }
 
   if (products.length === 0) {
     return <p className={styles.empty}>No products available.</p>;
   }
 
   return (
-    <div className={styles.grid}>
-      {products.map((product) => {
-        const totalAvailable = product.inventory.reduce((sum, i) => sum + i.availableUnits, 0);
+    <>
+      {checkoutBlockedMsg && (
+        <div className={styles.checkoutBlockedToast}>
+          ⚠️ {checkoutBlockedMsg}
+        </div>
+      )}
+      <div className={styles.grid}>
+        {products.map((product) => {
+          const totalAvailable = product.inventory.reduce((sum, i) => sum + i.availableUnits, 0);
 
-        return (
-          <div key={product.id} className={styles.card}>
-            <div className={styles.cardHeader}>
-              <span className={styles.category}>{product.category}</span>
-              <h2 className={styles.productName}>{product.name}</h2>
-              <p className={styles.description}>{product.description}</p>
-              <p className={styles.price}>{formatPrice(product.price)}</p>
-            </div>
+          return (
+            <div key={product.id} className={styles.card}>
+              <div className={styles.cardHeader}>
+                <span className={styles.category}>{product.category}</span>
+                <h2 className={styles.productName}>{product.name}</h2>
+                <p className={styles.description}>{product.description}</p>
+                <p className={styles.price}>{formatPrice(product.price)}</p>
+              </div>
 
-            <div className={styles.inventory}>
-              <h3 className={styles.inventoryHeading}>Stock by warehouse</h3>
-              {product.inventory.length === 0 ? (
-                <p className={styles.noInventory}>Not stocked anywhere.</p>
-              ) : (
-                product.inventory.map((inv) => {
-                  const cartItem = items.find(
-                    (i) => i.productId === product.id && i.warehouseId === inv.warehouseId,
-                  );
-                  const inCart = !!cartItem;
-                  const cartQty = cartItem?.quantity ?? 0;
+              <div className={styles.inventory}>
+                <h3 className={styles.inventoryHeading}>Stock by warehouse</h3>
+                {product.inventory.length === 0 ? (
+                  <p className={styles.noInventory}>Not stocked anywhere.</p>
+                ) : (
+                  product.inventory.map((inv) => {
+                    const cartItem = items.find(
+                      (i) => i.productId === product.id && i.warehouseId === inv.warehouseId,
+                    );
+                    const inCart = !!cartItem;
+                    const cartQty = cartItem?.quantity ?? 0;
 
-                  return (
-                    <div key={inv.warehouseId} className={styles.warehouseRow}>
-                      <div className={styles.warehouseInfo}>
-                        <span className={styles.warehouseName}>{inv.warehouseName}</span>
-                        <span className={styles.warehouseLocation}>{inv.warehouseLocation}</span>
-                        <StockBadge available={inv.availableUnits} />
-                      </div>
+                    return (
+                      <div key={inv.warehouseId} className={styles.warehouseRow}>
+                        <div className={styles.warehouseInfo}>
+                          <span className={styles.warehouseName}>{inv.warehouseName}</span>
+                          <span className={styles.warehouseLocation}>{inv.warehouseLocation}</span>
+                          <StockBadge available={inv.availableUnits} />
+                        </div>
 
-                      <div className={styles.reserveCol}>
-                        {!inCart ? (
-                          <button
-                            className={styles.reserveBtn}
-                            disabled={inv.availableUnits === 0}
-                            onClick={() =>
-                              addItem({
-                                productId: product.id,
-                                productName: product.name,
-                                productPrice: product.price,
-                                productCategory: product.category,
-                                warehouseId: inv.warehouseId,
-                                warehouseName: inv.warehouseName,
-                                warehouseLocation: inv.warehouseLocation,
-                                availableUnits: inv.availableUnits,
-                              })
-                            }
-                          >
-                            Add to bag
-                          </button>
-                        ) : (
-                          <div className={styles.qtyControls}>
+                        <div className={styles.reserveCol}>
+                          {!inCart ? (
                             <button
-                              className={styles.qtyBtn}
+                              className={styles.reserveBtn}
+                              disabled={inv.availableUnits === 0}
                               onClick={() =>
-                                updateQuantity(product.id, inv.warehouseId, cartQty - 1)
+                                tryAddItem({
+                                  productId: product.id,
+                                  productName: product.name,
+                                  productPrice: product.price,
+                                  productCategory: product.category,
+                                  warehouseId: inv.warehouseId,
+                                  warehouseName: inv.warehouseName,
+                                  warehouseLocation: inv.warehouseLocation,
+                                  availableUnits: inv.availableUnits,
+                                })
                               }
                             >
-                              −
+                              Add to bag
                             </button>
-                            <span className={styles.qtyNum}>{cartQty}</span>
-                            <button
-                              className={styles.qtyBtn}
-                              disabled={cartQty >= inv.availableUnits}
-                              onClick={() =>
-                                updateQuantity(product.id, inv.warehouseId, cartQty + 1)
-                              }
-                            >
-                              +
-                            </button>
-                            <button
-                              className={styles.removeBtn}
-                              onClick={() => removeItem(product.id, inv.warehouseId)}
-                              title="Remove"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
+                          ) : (
+                            <div className={styles.qtyControls}>
+                              <button
+                                className={styles.qtyBtn}
+                                onClick={() =>
+                                  updateQuantity(product.id, inv.warehouseId, cartQty - 1)
+                                }
+                              >
+                                −
+                              </button>
+                              <span className={styles.qtyNum}>{cartQty}</span>
+                              <button
+                                className={styles.qtyBtn}
+                                disabled={cartQty >= inv.availableUnits}
+                                onClick={() =>
+                                  updateQuantity(product.id, inv.warehouseId, cartQty + 1)
+                                }
+                              >
+                                +
+                              </button>
+                              <button
+                                className={styles.removeBtn}
+                                onClick={() => removeItem(product.id, inv.warehouseId)}
+                                title="Remove"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })
+                )}
+              </div>
+
+              {totalAvailable === 0 && (
+                <div className={styles.soldOutBanner}>Sold out across all warehouses</div>
               )}
             </div>
-
-            {totalAvailable === 0 && (
-              <div className={styles.soldOutBanner}>Sold out across all warehouses</div>
-            )}
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
