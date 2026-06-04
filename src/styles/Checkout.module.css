@@ -69,3 +69,197 @@
   color: #111827;
   margin-bottom: 28px;
 }
+
+.checkoutGrid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .checkoutGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summaryTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.orderItemLeft {
+  flex: 1;
+}
+
+.productCategory {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 2px 6px;
+  border-radius: 20px;
+}
+
+.productName {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 6px 0 2px;
+}
+
+.orderMeta {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.orderPrice {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.orderTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.orderTotalAmt {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.summary {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.btnGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btnConfirm {
+  width: 100%;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnConfirm:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btnConfirm:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btnCancel {
+  width: 100%;
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnCancel:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.btnCancel:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btnBack {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnBack:hover {
+  background: #f9fafb;
+}
+
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #991b1b;
+  line-height: 1.5;
+}
+
+.successBox, .releasedBox {
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.successIcon, .releasedIcon {
+  font-size: 56px;
+  margin-bottom: 20px;
+}
+
+.successBox h2, .releasedBox h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.successBox p, .releasedBox p {
+  font-size: 15px;
+  color: #6b7280;
+  margin-bottom: 24px;
+}

@@ -28,6 +28,7 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
     setLoading(true);
     setErrors([]);
 
+    // Create reservations for all cart items in parallel
     const results = await Promise.all(
       items.map(async (item) => {
         const res = await fetch('/api/reservations', {
@@ -48,6 +49,7 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
     const succeeded = results.filter((r) => r.ok);
 
     if (failed.length > 0) {
+      // Roll back any succeeded reservations so stock isn't held unnecessarily
       await Promise.all(
         succeeded.map((r) =>
           fetch(`/api/reservations/${r.data.reservation.id}/release`, { method: 'POST' }),
@@ -76,6 +78,7 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
       return;
     }
 
+    // All succeeded — navigate to multi-checkout page
     const ids = succeeded.map((r) => r.data.reservation.id).join(',');
     clearCart();
     onClose();
