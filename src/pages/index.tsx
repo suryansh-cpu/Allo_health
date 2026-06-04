@@ -1,7 +1,10 @@
 import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import { useState } from 'react';
 import { getProductsWithInventory } from '../services/productService';
 import ProductList from '../components/ProductList';
+import CartDrawer from '../components/CartDrawer';
+import { useCart } from '../components/CartContext';
 import styles from '../styles/Home.module.css';
 
 type ProductWithInventory = Awaited<ReturnType<typeof getProductsWithInventory>>[number];
@@ -10,7 +13,35 @@ interface Props {
   products: ProductWithInventory[];
 }
 
+function CartButton({ onClick }: { onClick: () => void }) {
+  const { totalItems, totalPrice } = useCart();
+
+  function formatPrice(paise: number) {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0,
+    }).format(paise / 100);
+  }
+
+  return (
+    <button className={styles.cartBtn} onClick={onClick}>
+      <span className={styles.cartIcon}>🛍️</span>
+      {totalItems > 0 ? (
+        <>
+          <span className={styles.cartCount}>{totalItems}</span>
+          <span className={styles.cartTotal}>{formatPrice(totalPrice)}</span>
+        </>
+      ) : (
+        <span className={styles.cartEmpty}>Bag</span>
+      )}
+    </button>
+  );
+}
+
 export default function Home({ products }: Props) {
+  const [cartOpen, setCartOpen] = useState(false);
+
   return (
     <>
       <Head>
@@ -26,6 +57,7 @@ export default function Home({ products }: Props) {
               <span className={styles.logoText}>allo</span>
             </div>
             <p className={styles.tagline}>Multi-warehouse inventory &amp; order platform</p>
+            <CartButton onClick={() => setCartOpen(true)} />
           </div>
         </header>
 
@@ -34,7 +66,7 @@ export default function Home({ products }: Props) {
             <div className={styles.sectionHeader}>
               <h1 className={styles.sectionTitle}>All Products</h1>
               <p className={styles.sectionSub}>
-                Click <strong>Reserve</strong> to hold a unit for 10 minutes while you check out.
+                Add items to your bag, then checkout to hold stock for 10 minutes.
               </p>
             </div>
             <ProductList products={products} />
@@ -43,10 +75,12 @@ export default function Home({ products }: Props) {
 
         <footer className={styles.footer}>
           <div className={styles.container}>
-            Reservations expire after 10 minutes if not confirmed.
+            Stock is held for 10 minutes once you begin checkout. Items in your bag are not reserved yet.
           </div>
         </footer>
       </div>
+
+      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   );
 }

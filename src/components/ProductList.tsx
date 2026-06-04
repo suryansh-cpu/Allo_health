@@ -1,6 +1,5 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
 import styles from './ProductList.module.css';
+import { useCart } from './CartContext';
 
 interface WarehouseStock {
   warehouseId: string;
@@ -40,44 +39,8 @@ function StockBadge({ available }: { available: number }) {
   return <span className={`${styles.badge} ${styles.badgeOk}`}>{available} available</span>;
 }
 
-interface ReserveState {
-  loading: boolean;
-  error: string | null;
-}
-
 export default function ProductList({ products }: Props) {
-  const router = useRouter();
-  const [reserveState, setReserveState] = useState<Record<string, ReserveState>>({});
-
-  async function handleReserve(productId: string, warehouseId: string) {
-    const key = `${productId}:${warehouseId}`;
-    setReserveState((s) => ({ ...s, [key]: { loading: true, error: null } }));
-
-    try {
-      const res = await fetch('/api/reservations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, warehouseId, quantity: 1 }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setReserveState((s) => ({
-          ...s,
-          [key]: { loading: false, error: data.error ?? 'Reservation failed. Please try again.' },
-        }));
-        return;
-      }
-
-      router.push(`/checkout?id=${data.reservation.id}`);
-    } catch {
-      setReserveState((s) => ({
-        ...s,
-        [key]: { loading: false, error: 'Network error. Please try again.' },
-      }));
-    }
-  }
+  const { items, addItem, removeItem, updateQuantity } = useCart();
 
   if (products.length === 0) {
     return <p className={styles.empty}>No products available.</p>;
@@ -103,8 +66,11 @@ export default function ProductList({ products }: Props) {
                 <p className={styles.noInventory}>Not stocked anywhere.</p>
               ) : (
                 product.inventory.map((inv) => {
-                  const key = `${product.id}:${inv.warehouseId}`;
-                  const state = reserveState[key];
+                  const cartItem = items.find(
+                    (i) => i.productId === product.id && i.warehouseId === inv.warehouseId,
+                  );
+                  const inCart = !!cartItem;
+                  const cartQty = cartItem?.quantity ?? 0;
 
                   return (
                     <div key={inv.warehouseId} className={styles.warehouseRow}>
@@ -115,14 +81,54 @@ export default function ProductList({ products }: Props) {
                       </div>
 
                       <div className={styles.reserveCol}>
-                        <button
-                          className={styles.reserveBtn}
-                          disabled={inv.availableUnits === 0 || state?.loading}
-                          onClick={() => handleReserve(product.id, inv.warehouseId)}
-                        >
-                          {state?.loading ? 'Holding…' : 'Reserve'}
-                        </button>
-                        {state?.error && <p className={styles.reserveError}>{state.error}</p>}
+                        {!inCart ? (
+                          <button
+                            className={styles.reserveBtn}
+                            disabled={inv.availableUnits === 0}
+                            onClick={() =>
+                              addItem({
+                                productId: product.id,
+                                productName: product.name,
+                                productPrice: product.price,
+                                productCategory: product.category,
+                                warehouseId: inv.warehouseId,
+                                warehouseName: inv.warehouseName,
+                                warehouseLocation: inv.warehouseLocation,
+                                availableUnits: inv.availableUnits,
+                              })
+                            }
+                          >
+                            Add to bag
+                          </button>
+                        ) : (
+                          <div className={styles.qtyControls}>
+                            <button
+                              className={styles.qtyBtn}
+                              onClick={() =>
+                                updateQuantity(product.id, inv.warehouseId, cartQty - 1)
+                              }
+                            >
+                              −
+                            </button>
+                            <span className={styles.qtyNum}>{cartQty}</span>
+                            <button
+                              className={styles.qtyBtn}
+                              disabled={cartQty >= inv.availableUnits}
+                              onClick={() =>
+                                updateQuantity(product.id, inv.warehouseId, cartQty + 1)
+                              }
+                            >
+                              +
+                            </button>
+                            <button
+                              className={styles.removeBtn}
+                              onClick={() => removeItem(product.id, inv.warehouseId)}
+                              title="Remove"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
