@@ -43,6 +43,17 @@ Open [http://localhost:3000](http://localhost:3000) — you'll see 4 products se
 
 ---
 
+## HOW TO ADD DATA INTO THE DATABASE
+
+1. Open a new terminal and go to project directoryy
+2. use this command ->
+```bash
+npx prisma studio
+```
+3. You will see a list and click on products and then press add record and enter details
+4. go to inventory now and add the respective product in inventory and also select a warehouse on the warehouse section of the inventory add record field too.
+5. refresh the page
+
 ## How Expiry Works in Production
 
 Reservations that aren't confirmed before `expiresAt` are released automatically via two complementary mechanisms:
