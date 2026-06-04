@@ -1,0 +1,309 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 420px;
+  max-width: 100vw;
+  background: #fff;
+  box-shadow: -4px 0 32px rgba(0, 0, 0, 0.12);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count {
+  background: #111827;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 2px 8px;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  border-radius: 6px;
+}
+
+.closeBtn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty p {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px;
+}
+
+.emptyHint {
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #9ca3af !important;
+}
+
+.items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.itemCategory {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6366f1;
+  background: #eef2ff;
+  padding: 2px 6px;
+  border-radius: 20px;
+}
+
+.itemName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 6px 0 2px;
+  line-height: 1.3;
+}
+
+.itemWarehouse {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 6px;
+}
+
+.itemPrice {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.itemControls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.qtyRow {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.qtyBtn {
+  background: #f9fafb;
+  border: none;
+  width: 32px;
+  height: 32px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+  transition: background 0.1s;
+  line-height: 1;
+}
+
+.qtyBtn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.qtyBtn:disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.qtyNum {
+  width: 36px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  line-height: 32px;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.removeBtn:hover {
+  color: #dc2626;
+}
+
+.errorBox {
+  margin: 0 16px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 14px 16px;
+  flex-shrink: 0;
+}
+
+.errorTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #991b1b;
+  margin: 0 0 10px;
+}
+
+.errorItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.errorProduct {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7f1d1d;
+}
+
+.errorMsg {
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+.errorHint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 8px 0 0;
+}
+
+.footer {
+  padding: 16px 24px 24px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.totalPrice {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.holdNote {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0 0 14px;
+}
+
+.checkoutBtn {
+  width: 100%;
+  background: #111827;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.checkoutBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.checkoutBtn:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
