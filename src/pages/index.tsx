@@ -74,6 +74,7 @@ function ActiveCheckoutBanner() {
   const { activeCheckout, clearActiveCheckout } = useCart();
   const router = useRouter();
   const [expired, setExpired] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     if (!activeCheckout) return;
@@ -83,6 +84,26 @@ function ActiveCheckoutBanner() {
   }, [activeCheckout]);
 
   if (!activeCheckout) return null;
+
+  async function handleCancel() {
+    if (!activeCheckout) return;
+    setCancelling(true);
+    try {
+      const ids = activeCheckout.ids.split(',').map((s) => s.trim()).filter(Boolean);
+      // Release every reservation that was part of this checkout
+      await Promise.all(
+        ids.map((id) =>
+          fetch(`/api/reservations/${id}/release`, { method: 'POST' }).catch(() => {
+            // If a release fails (e.g. already released/expired), that's fine —
+            // the server's cron job will clean it up. We still clear the UI.
+          }),
+        ),
+      );
+    } finally {
+      setCancelling(false);
+      clearActiveCheckout();
+    }
+  }
 
   if (expired) {
     return (
@@ -108,10 +129,11 @@ function ActiveCheckoutBanner() {
       </button>
       <button
         className={styles.checkoutBannerDismiss}
-        onClick={clearActiveCheckout}
-        title="Dismiss (does not cancel your reservation)"
+        onClick={handleCancel}
+        disabled={cancelling}
+        title="Cancel reservation and release held stock"
       >
-        ✕
+        {'✕'}
       </button>
     </div>
   );
