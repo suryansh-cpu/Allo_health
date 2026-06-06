@@ -12,14 +12,16 @@ export async function getProductsWithInventory() {
 
   return products.map((product) => ({
     ...product,
-    inventory: product.inventory.map((inv) => ({
-      warehouseId: inv.warehouseId,
-      warehouseName: inv.warehouse.name,
-      warehouseLocation: inv.warehouse.location,
-      totalUnits: inv.totalUnits,
-      reservedUnits: inv.reservedUnits,
-      availableUnits: inv.totalUnits - inv.reservedUnits,
-    })),
+    inventory: product.inventory
+      .filter((inv) => inv.totalUnits > 0)
+      .map((inv) => ({
+        warehouseId: inv.warehouseId,
+        warehouseName: inv.warehouse.name,
+        warehouseLocation: inv.warehouse.location,
+        totalUnits: inv.totalUnits,
+        reservedUnits: inv.reservedUnits,
+        availableUnits: inv.totalUnits - inv.reservedUnits,
+      })),
   }));
 }
 

@@ -50,6 +50,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Upsert each inventory row (never reduce below reservedUnits)
     if (inventory) {
       for (const inv of inventory) {
+        if (inv.totalUnits === 0) {
+          // If the admin cleared a warehouse to 0, delete its row (if no active reservations)
+          const existing = await prisma.inventory.findUnique({
+            where: { productId_warehouseId: { productId: id, warehouseId: inv.warehouseId } },
+          });
+          if (existing && existing.reservedUnits === 0) {
+            await prisma.inventory.delete({
+              where: { productId_warehouseId: { productId: id, warehouseId: inv.warehouseId } },
+            });
+          }
+          // If there are active reservations, leave the row alone (don't create a 0-unit ghost)
+          continue;
+        }
+
         // Ensure totalUnits >= reservedUnits so available never goes negative
         const existing = await prisma.inventory.findUnique({
           where: { productId_warehouseId: { productId: id, warehouseId: inv.warehouseId } },

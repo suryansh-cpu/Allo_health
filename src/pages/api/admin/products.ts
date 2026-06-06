@@ -42,10 +42,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       data: productData,
     });
 
-    // Create inventory entries if provided
-    if (inventory && inventory.length > 0) {
+    // Create inventory entries if provided (skip warehouses with 0 units)
+    const validInventory = (inventory ?? []).filter((inv) => inv.totalUnits > 0);
+    if (validInventory.length > 0) {
       await prisma.inventory.createMany({
-        data: inventory.map((inv) => ({
+        data: validInventory.map((inv) => ({
           productId: product.id,
           warehouseId: inv.warehouseId,
           totalUnits: inv.totalUnits,

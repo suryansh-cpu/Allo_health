@@ -114,7 +114,7 @@ interface ProductFormValues {
   description: string;
   price: string;
   category: string;
-  inventory: { warehouseId: string; totalUnits: number }[];
+  inventory: { warehouseId: string; availableUnits: number }[];
 }
 
 function ProductForm({
@@ -135,11 +135,12 @@ function ProductForm({
     description: initial?.description ?? '',
     price: initial ? toInputRupees(initial.price) : '',
     category: initial?.category ?? '',
-    inventory: warehouses.map((wh) => ({
-      warehouseId: wh.id,
-      totalUnits:
-        initial?.inventory.find((i) => i.warehouseId === wh.id)?.totalUnits ?? 0,
-    })),
+    inventory: warehouses.map((wh) => {
+      const inv = initial?.inventory.find((i) => i.warehouseId === wh.id);
+      const total    = inv?.totalUnits    ?? 0;
+      const reserved = inv?.reservedUnits ?? 0;
+      return { warehouseId: wh.id, availableUnits: total - reserved };
+    }),
   }));
 
   const [saving, setSaving] = useState(false);
@@ -154,7 +155,7 @@ function ProductForm({
     setForm((f) => ({
       ...f,
       inventory: f.inventory.map((i) =>
-        i.warehouseId === warehouseId ? { ...i, totalUnits: n } : i
+        i.warehouseId === warehouseId ? { ...i, availableUnits: n } : i
       ),
     }));
   }
@@ -173,7 +174,12 @@ function ProductForm({
         description: form.description.trim(),
         price: toPaise(form.price),
         category: form.category.trim(),
-        inventory: form.inventory,
+        // Convert availableUnits → totalUnits for the API.
+        // totalUnits = availableUnits + reservedUnits (reserved slots must stay in the total)
+        inventory: form.inventory.map((i) => ({
+          warehouseId: i.warehouseId,
+          totalUnits: i.availableUnits + getReserved(i.warehouseId),
+        })),
       };
 
       const url = initial ? `/api/admin/products/${initial.id}` : '/api/admin/products';
@@ -261,7 +267,6 @@ function ProductForm({
             )}
             {form.inventory.map((inv) => {
               const wh = warehouses.find((w) => w.id === inv.warehouseId)!;
-              const reserved = getReserved(inv.warehouseId);
               return (
                 <div key={inv.warehouseId} className={styles.invRow}>
                   <div className={styles.invInfo}>
@@ -269,18 +274,14 @@ function ProductForm({
                     <span className={styles.invLoc}>{wh.location}</span>
                   </div>
                   <div className={styles.invControls}>
-                    {reserved > 0 && (
-                      <span className={styles.invReserved}>{reserved} reserved</span>
-                    )}
                     <input
                       type="number"
-                      min={reserved}
+                      min={0}
                       className={styles.invInput}
-                      value={inv.totalUnits - reserved}
-                      // value={inv.totalUnits}
+                      value={inv.availableUnits}
                       onChange={(e) => setInvUnits(inv.warehouseId, e.target.value)}
                     />
-                    <span className={styles.invUnitsLabel}>total units</span>
+                    <span className={styles.invUnitsLabel}>available units</span>
                   </div>
                 </div>
               );
