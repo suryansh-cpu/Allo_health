@@ -2,8 +2,10 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
+  "/checkout": "pages/checkout.js",
   "/": "pages/index.js",
   "/api/admin/warehouses": "pages/api/admin/warehouses.js",
+  "/api/admin/products/[id]": "pages/api/admin/products/[id].js",
   "/api/admin/products": "pages/api/admin/products.js",
   "/admin": "pages/admin.js"
 }

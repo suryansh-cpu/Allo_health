@@ -276,7 +276,8 @@ function ProductForm({
                       type="number"
                       min={reserved}
                       className={styles.invInput}
-                      value={inv.totalUnits}
+                      value={inv.totalUnits - reserved}
+                      // value={inv.totalUnits}
                       onChange={(e) => setInvUnits(inv.warehouseId, e.target.value)}
                     />
                     <span className={styles.invUnitsLabel}>total units</span>
@@ -315,6 +316,7 @@ function WarehouseForm({
 }) {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
+  const [id, setId] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -326,7 +328,7 @@ function WarehouseForm({
       const res = await fetch('/api/admin/warehouses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify({ name: name.trim(), location: location.trim() }),
+        body: JSON.stringify({ name: name.trim(), location: location.trim(), id: id.trim() || undefined }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
@@ -346,12 +348,22 @@ function WarehouseForm({
           <button className={styles.modalClose} onClick={onCancel}>✕</button>
         </div>
         <form onSubmit={save} className={styles.form}>
+        <label className = {styles.label}>
+            Id
+            <input
+              className={styles.input}
+              placeholder="Auto-generated unique ID (optional)"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+            />
+          </label>
           <label className={styles.label}>
             Warehouse name
             <input
               className={styles.input}
               placeholder="e.g. Mumbai Hub"
               value={name}
+              // onChange={(e) => setName(e.target.value)}
               onChange={(e) => setName(e.target.value)}
               required
               autoFocus
@@ -449,7 +461,7 @@ function StatsBar({ products, warehouses }: { products: Product[]; warehouses: W
       </div>
       <div className={styles.statCard}>
         <span className={styles.statNum}>{totalReserved}</span>
-        <span className={styles.statLabel}>Reserved units</span>
+        <span className={styles.statLabel}>Reserved</span>
       </div>
       {outOfStock > 0 && (
         <div className={`${styles.statCard} ${styles.statCardWarn}`}>
@@ -685,6 +697,7 @@ export default function AdminPage() {
                                 {p.inventory.map((inv) => (
                                   <span key={inv.warehouseId} className={styles.invChip}>
                                     {inv.warehouseName ?? inv.warehouseId}:&nbsp;
+                                    {/* {inv.warehouseName ?? inv.warehouseId} */}
                                     {inv.totalUnits - (inv.reservedUnits ?? 0)}
                                   </span>
                                 ))}

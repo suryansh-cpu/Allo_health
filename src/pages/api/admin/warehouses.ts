@@ -4,6 +4,7 @@ import { withAdminAuth } from '../../../lib/adminAuth';
 import { z } from 'zod';
 
 const WarehouseSchema = z.object({
+  id: z.string().optional(),
   name: z.string().min(1),
   location: z.string().min(1),
 });
