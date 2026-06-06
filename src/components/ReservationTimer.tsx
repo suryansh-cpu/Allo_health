@@ -49,7 +49,7 @@ export default function ReservationTimer({ expiresAt, onExpire }: Props) {
         .join(' ')}
     >
       <div className={styles.label}>
-        {isExpired ? '⛔ Reservation Expired' : '⏱ Time remaining to complete checkout'}
+        {isExpired ? '⛔ERROR 410 : Reservation Expired' : '⏱ Time remaining to complete checkout'}
       </div>
       {!isExpired && (
         <div className={styles.display}>

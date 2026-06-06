@@ -144,7 +144,8 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
 
             {errors.length > 0 && (
               <div className={styles.errorBox}>
-                <p className={styles.errorTitle}>⚠️ Some items couldn't be reserved:</p>
+                <h2 className={styles.errorTitle}>⚠️ERROR 409!!! (not enough stock)</h2>
+                <p className={styles.errorTitle}> Some items couldn't be reserved:</p>
                 {errors.map((e, i) => (
                   <div key={i} className={styles.errorItem}>
                     <span className={styles.errorProduct}>{e.productName} — {e.warehouseName}</span>
