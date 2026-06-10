@@ -42,11 +42,18 @@ export default function CheckoutPage({ reservations: initial, earliestExpiry }: 
     setError(null);
 
     const results = await Promise.all(
-      reservations.map((r) =>
-        fetch(`/api/reservations/${r.id}/confirm`, { method: 'POST' }).then((res) =>
+      reservations.map((r) => {
+        const headers: Record<string, string> = {};
+        if (r.idempotencyKey) {
+          headers['Idempotency-Key'] = r.idempotencyKey;
+        }
+        return fetch(`/api/reservations/${r.id}/confirm`, {
+          method: 'POST',
+          headers,
+        }).then((res) =>
           res.json().then((data) => ({ ok: res.ok, status: res.status, data, id: r.id })),
-        ),
-      ),
+        );
+      }),
     );
 
     const failed = results.filter((r) => !r.ok);

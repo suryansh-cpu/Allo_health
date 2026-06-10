@@ -28,12 +28,19 @@ export default function CartDrawer({ open, onClose }: { open: boolean; onClose: 
     setLoading(true);
     setErrors([]);
 
+    // Generate a unique checkout group ID to ensure idempotency across retries of this checkout batch
+    const checkoutGroupId = Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+
     // Create reservations for all cart items in parallel
     const results = await Promise.all(
       items.map(async (item) => {
+        const idempotencyKey = `${checkoutGroupId}-${item.productId}-${item.warehouseId}`;
         const res = await fetch('/api/reservations', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': idempotencyKey,
+          },
           body: JSON.stringify({
             productId: item.productId,
             warehouseId: item.warehouseId,
