@@ -30,6 +30,7 @@ export interface ReservationDetail {
   releasedAt?: string | null;
   customerName?: string | null;
   customerEmail?: string | null;
+  idempotencyKey?: string | null;
   product: ProductSummary;
   warehouse: WarehouseSummary;
 }
@@ -72,7 +73,14 @@ export default function CheckoutForm({ reservation: initialReservation }: Props)
         : `/api/reservations/${reservation.id}/release`;
 
     try {
-      const res = await fetch(path, { method: 'POST' });
+      const headers: Record<string, string> = {};
+      if (action === 'confirm' && reservation.idempotencyKey) {
+        headers['Idempotency-Key'] = reservation.idempotencyKey;
+      }
+      const res = await fetch(path, {
+        method: 'POST',
+        headers,
+      });
       const data = await res.json();
 
       if (!res.ok) {

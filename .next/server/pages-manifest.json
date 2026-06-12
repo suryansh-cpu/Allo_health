@@ -3,6 +3,7 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/": "pages/index.js",
+  "/admin": "pages/admin.js",
   "/api/reservations/[id]/release": "pages/api/reservations/[id]/release.js",
   "/checkout": "pages/checkout.js"
 }
